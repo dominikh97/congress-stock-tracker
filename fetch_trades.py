@@ -6,14 +6,16 @@ import requests
 API_URL = "https://congressinfor-production.up.railway.app/trades/recent"
 
 
-def fetch_trades(days=2):
+def fetch_trades(days=2, limit=10):
+
+    params = {
+        "days": days,
+        "limit": limit
+    }
 
     response = requests.get(
         API_URL,
-        params={
-            "days": days,
-            "limit": 10
-        },
+        params=params,
         timeout=30
     )
 
@@ -23,10 +25,7 @@ def fetch_trades(days=2):
 
         response = requests.get(
             API_URL,
-            params={
-                "days": days,
-                "limit": 200
-            },
+            params=params,
             timeout=30
         )
 
