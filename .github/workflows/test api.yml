@@ -1,0 +1,21 @@
+- name: Test API
+  run: |
+    python - <<'PY'
+    import requests
+
+    url = "https://congressinfor-production.up.railway.app/trades/recent"
+
+    r = requests.get(
+        url,
+        params={"days": 2, "limit": 10},
+        timeout=30
+    )
+
+    print("Status:", r.status_code)
+    print("Headers:")
+    for key, value in r.headers.items():
+        print(f"  {key}: {value}")
+
+    print("\nResponse:")
+    print(r.text[:2000])
+    PY
