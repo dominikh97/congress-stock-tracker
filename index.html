@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Congress Stock Tracker</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <div class="container">
+        <h1>Congress Stock Tracker</h1>
+        <p>Publicly disclosed stock transactions by members of U.S. Congress</p>
+    </div>
+</header>
+
+
+<main class="container">
+
+    <section class="stats">
+
+        <div class="stat-card">
+            <span>Trades</span>
+            <strong id="trade-count">—</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>Politicians</span>
+            <strong id="politician-count">—</strong>
+        </div>
+
+        <div class="stat-card">
+            <span>Stocks</span>
+            <strong id="stock-count">—</strong>
+        </div>
+
+    </section>
+
+
+    <section class="filters">
+
+        <input
+            type="text"
+            id="politician-filter"
+            placeholder="Search politician..."
+        >
+
+        <input
+            type="text"
+            id="ticker-filter"
+            placeholder="Search ticker..."
+        >
+
+        <select id="transaction-filter">
+            <option value="">All transactions</option>
+            <option value="BUY">Buy</option>
+            <option value="SELL">Sell</option>
+        </select>
+
+    </section>
+
+
+    <section class="table-container">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Politician</th>
+                    <th>Chamber</th>
+                    <th>Ticker</th>
+                    <th>Transaction</th>
+                    <th>Amount</th>
+                    <th>Transaction Date</th>
+                    <th>Disclosed</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody id="trades-table">
+                <tr>
+                    <td colspan="8" class="loading">
+                        Loading trades...
+                    </td>
+                </tr>
+            </tbody>
+
+        </table>
+
+    </section>
+
+</main>
+
+
+<footer>
+    <div class="container">
+        Congress Stock Tracker
+    </div>
+</footer>
+
+
+<script src="app.js"></script>
+
+</body>
+</html>
