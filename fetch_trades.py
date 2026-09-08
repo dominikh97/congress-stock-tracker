@@ -1,7 +1,5 @@
-```python
+from database import insert_trade
 import requests
-
-from database import init_database, insert_trade
 
 
 API_URL = (
@@ -16,37 +14,29 @@ def fetch_trades(days=7):
         API_URL,
         params={
             "days": days,
-            "limit": 500,
+            "limit": 500
         },
-        timeout=30,
+        timeout=30
     )
 
     response.raise_for_status()
 
-    data = response.json()
-
-    return data.get("trades", [])
+    return response.json().get("trades", [])
 
 
 def main():
 
     print("Fetching congressional trades...")
 
-    init_database()
+    trades = fetch_trades()
 
-    trades = fetch_trades(days=7)
-
-    new_trades = 0
+    print(f"Fetched {len(trades)} trades.")
 
     for trade in trades:
+        insert_trade(trade)
 
-        if insert_trade(trade):
-            new_trades += 1
-
-    print(f"Fetched: {len(trades)} trades")
-    print(f"New trades: {new_trades}")
+    print("Database updated.")
 
 
 if __name__ == "__main__":
     main()
-```
