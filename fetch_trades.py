@@ -12,7 +12,7 @@ def fetch_trades(days=2):
         API_URL,
         params={
             "days": days,
-            "limit": 200
+            "limit": 10
         },
         timeout=30
     )
