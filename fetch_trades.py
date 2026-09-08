@@ -1,5 +1,10 @@
+import json
+import os
 import time
 import requests
+
+API_URL = "https://congressinfor-production.up.railway.app/trades/recent"
+
 
 def fetch_trades(days=2):
 
@@ -28,3 +33,23 @@ def fetch_trades(days=2):
     response.raise_for_status()
 
     return response.json().get("trades", [])
+
+
+def main():
+
+    print("Fetching congressional trades...")
+
+    trades = fetch_trades()
+
+    print(f"Fetched {len(trades)} trades")
+
+    os.makedirs("data", exist_ok=True)
+
+    with open("data/trades.json", "w", encoding="utf-8") as f:
+        json.dump(trades, f, indent=2, ensure_ascii=False)
+
+    print("Saved trades to data/trades.json")
+
+
+if __name__ == "__main__":
+    main()
