@@ -1,42 +1,30 @@
-from database import insert_trade
+import time
 import requests
 
-
-API_URL = (
-    "https://congressinfor-production.up.railway.app"
-    "/trades/recent"
-)
-
-
-def fetch_trades(days=7):
+def fetch_trades(days=2):
 
     response = requests.get(
         API_URL,
         params={
             "days": days,
-            "limit": 500
+            "limit": 200
         },
         timeout=30
     )
 
+    if response.status_code == 429:
+        print("API rate limit reached. Waiting 60 seconds...")
+        time.sleep(60)
+
+        response = requests.get(
+            API_URL,
+            params={
+                "days": days,
+                "limit": 200
+            },
+            timeout=30
+        )
+
     response.raise_for_status()
 
     return response.json().get("trades", [])
-
-
-def main():
-
-    print("Fetching congressional trades...")
-
-    trades = fetch_trades()
-
-    print(f"Fetched {len(trades)} trades.")
-
-    for trade in trades:
-        insert_trade(trade)
-
-    print("Database updated.")
-
-
-if __name__ == "__main__":
-    main()
