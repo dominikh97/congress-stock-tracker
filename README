@@ -1,0 +1,1 @@
+A Streamlit-based tracker for U.S. Congress stock transactions. It monitors publicly disclosed House and Senate trades, tracks selected politicians and their transactions, and provides alerts when new trades are reported.
