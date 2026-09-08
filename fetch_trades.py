@@ -2,37 +2,31 @@ import json
 import os
 import requests
 
-API_URL = "https://quantengines.com/api/v1/trades/recent/list"
+API_URL = "https://www.bargo.ai/free-apis/congress/v1/trades"
 DATA_FILE = "data/trades.json"
 
 
 def fetch_trades(limit=100):
-    """Fetch the most recent congressional trades."""
+    """Fetch the most recent congressional trades from Bargo."""
 
     print("Fetching congressional trades...")
 
     response = requests.get(
         API_URL,
         params={
-            "limit": limit
+            "limit": limit,
+            "page": 0
         },
         timeout=30
     )
 
     print("Status code:", response.status_code)
-    print("Response:")
-    print(response.text[:5000])
 
     response.raise_for_status()
 
     data = response.json()
 
-    print("Response type:", type(data))
-
-    if isinstance(data, dict):
-        print("Response keys:", data.keys())
-
-    trades = data.get("trades", []) if isinstance(data, dict) else data
+    trades = data.get("trades", [])
 
     print(f"Fetched {len(trades)} trades")
 
@@ -55,23 +49,27 @@ def load_existing_trades():
 
 
 def get_trade_id(trade):
-    """Use the API trade ID to identify a trade."""
+    """Create a stable ID for a trade."""
 
-    if trade.get("id") is not None:
-        return str(trade["id"])
+    # Bargo does not necessarily provide the same ID
+    # structure as the previous API, so construct one
+    # from the identifying trade fields.
 
-    # Fallback if an ID is not provided
-    return json.dumps(
-        trade,
-        sort_keys=True,
-        ensure_ascii=False
-    )
+    return "|".join([
+        str(trade.get("member", "")),
+        str(trade.get("ticker", "")),
+        str(trade.get("type", "")),
+        str(trade.get("transaction_date", "")),
+        str(trade.get("disclosure_date", "")),
+        str(trade.get("amount_range", ""))
+    ])
 
 
 def merge_trades(existing, new):
     """Merge existing and new trades and remove duplicates."""
 
     combined = existing + new
+
     unique_trades = {}
 
     for trade in combined:
