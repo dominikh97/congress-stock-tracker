@@ -2,19 +2,18 @@ import json
 import os
 import requests
 
-API_URL = "https://congressinfor-production.up.railway.app/trades/recent"
+API_URL = "https://quantengines.com/api/v1/trades/recent/list"
 DATA_FILE = "data/trades.json"
 
 
-def fetch_trades(days=7, limit=10):
-    """Fetch recent congressional trades from the API."""
+def fetch_trades(limit=100):
+    """Fetch the most recent congressional trades."""
 
     print("Fetching congressional trades...")
 
     response = requests.get(
         API_URL,
         params={
-            "days": days,
             "limit": limit
         },
         timeout=30
@@ -22,7 +21,8 @@ def fetch_trades(days=7, limit=10):
 
     response.raise_for_status()
 
-    trades = response.json().get("trades", [])
+    data = response.json()
+    trades = data.get("trades", [])
 
     print(f"Fetched {len(trades)} trades")
 
@@ -45,11 +45,12 @@ def load_existing_trades():
 
 
 def get_trade_id(trade):
-    """Create a unique identifier for each trade."""
+    """Use the API trade ID to identify a trade."""
 
     if trade.get("id") is not None:
         return str(trade["id"])
 
+    # Fallback if an ID is not provided
     return json.dumps(
         trade,
         sort_keys=True,
@@ -58,7 +59,7 @@ def get_trade_id(trade):
 
 
 def merge_trades(existing, new):
-    """Merge existing and new trades while removing duplicates."""
+    """Merge existing and new trades and remove duplicates."""
 
     combined = existing + new
     unique_trades = {}
