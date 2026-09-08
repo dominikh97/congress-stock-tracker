@@ -1,3 +1,6 @@
+const SUPABASE_URL = "https://oalpdiiwxwoqmvwvpyvh.supabase.co/rest/v1/";
+const SUPABASE_KEY = "sb_publishable_3v1oHDBWDuFjuSP-DRgxIg_P7MPGR9Q";
+
 const API_URL =
     "https://congressinfor-production.up.railway.app/trades/recent?days=30";
 
