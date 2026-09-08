@@ -1,21 +1,37 @@
-- name: Test API
-  run: |
-    python - <<'PY'
-    import requests
+name: Test API
 
-    url = "https://congressinfor-production.up.railway.app/trades/recent"
+on:
+  workflow_dispatch:
 
-    r = requests.get(
-        url,
-        params={"days": 2, "limit": 10},
-        timeout=30
-    )
+jobs:
+  test-api:
+    runs-on: ubuntu-latest
 
-    print("Status:", r.status_code)
-    print("Headers:")
-    for key, value in r.headers.items():
-        print(f"  {key}: {value}")
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
-    print("\nResponse:")
-    print(r.text[:2000])
-    PY
+      - name: Test API
+        run: |
+          python - <<'PY'
+          import requests
+
+          url = "https://congressinfor-production.up.railway.app/trades/recent"
+
+          r = requests.get(
+              url,
+              params={"days": 2, "limit": 10},
+              timeout=30
+          )
+
+          print("Status:", r.status_code)
+
+          print("Headers:")
+          for key, value in r.headers.items():
+              print(f"  {key}: {value}")
+
+          print("\nResponse:")
+          print(r.text[:2000])
+          PY
