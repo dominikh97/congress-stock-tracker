@@ -19,10 +19,20 @@ def fetch_trades(limit=100):
         timeout=30
     )
 
+    print("Status code:", response.status_code)
+    print("Response:")
+    print(response.text[:5000])
+
     response.raise_for_status()
 
     data = response.json()
-    trades = data.get("trades", [])
+
+    print("Response type:", type(data))
+
+    if isinstance(data, dict):
+        print("Response keys:", data.keys())
+
+    trades = data.get("trades", []) if isinstance(data, dict) else data
 
     print(f"Fetched {len(trades)} trades")
 
