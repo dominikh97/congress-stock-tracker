@@ -1,76 +1,41 @@
-```python
-import sqlite3
-from pathlib import Path
-
-DB_PATH = Path(__file__).parent / "data" / "trades.db"
+import os
+from supabase import create_client
 
 
-def get_connection():
-    DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    return sqlite3.connect(DB_PATH)
+SUPABASE_URL = os.environ["SUPABASE_URL"]
+SUPABASE_KEY = os.environ["SUPABASE_KEY"]
 
-
-def init_database():
-    with get_connection() as conn:
-        conn.execute("""
-            CREATE TABLE IF NOT EXISTS trades (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                member TEXT NOT NULL,
-                chamber TEXT,
-                ticker TEXT,
-                trade_type TEXT,
-                amount TEXT,
-                tx_date TEXT,
-                disclosed TEXT,
-                asset TEXT,
-                link TEXT,
-                UNIQUE(
-                    member,
-                    ticker,
-                    trade_type,
-                    tx_date,
-                    disclosed,
-                    amount
-                )
-            )
-        """)
-
-        conn.commit()
+supabase = create_client(
+    SUPABASE_URL,
+    SUPABASE_KEY
+)
 
 
 def insert_trade(trade):
-    with get_connection() as conn:
-        cursor = conn.execute("""
-            INSERT OR IGNORE INTO trades (
-                member,
-                chamber,
-                ticker,
-                trade_type,
-                amount,
-                tx_date,
-                disclosed,
-                asset,
-                link
+
+    data = {
+        "member": trade.get("member"),
+        "chamber": trade.get("chamber"),
+        "ticker": trade.get("ticker"),
+        "trade_type": trade.get("trade_type"),
+        "amount": trade.get("amount"),
+        "tx_date": trade.get("tx_date"),
+        "disclosed": trade.get("disclosed"),
+        "asset": trade.get("asset"),
+        "link": trade.get("link"),
+    }
+
+    result = (
+        supabase
+        .table("trades")
+        .upsert(
+            data,
+            on_conflict=(
+                "member,ticker,trade_type,"
+                "tx_date,disclosed,amount"
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            trade.get("member"),
-            trade.get("chamber"),
-            trade.get("ticker"),
-            trade.get("trade_type"),
-            trade.get("amount"),
-            trade.get("tx_date"),
-            trade.get("disclosed"),
-            trade.get("asset"),
-            trade.get("link"),
-        ))
+        )
+        .execute()
+    )
 
-        conn.commit()
-
-        return cursor.rowcount == 1
-
-
-if __name__ == "__main__":
-    init_database()
-    print(f"Database initialized at: {DB_PATH}")
-```
+    return result
