@@ -3,17 +3,13 @@ name: Fetch Congress Trades
 on:
   schedule:
     - cron: "*/30 * * * *"
-
   workflow_dispatch:
 
 jobs:
-
   fetch-trades:
-
     runs-on: ubuntu-latest
 
     steps:
-
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -23,12 +19,10 @@ jobs:
           python-version: "3.12"
 
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
 
       - name: Fetch trades
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
-        run: |
-          python fetch_trades.py
+        run: python fetch_trades.py
