@@ -6,7 +6,7 @@ API_URL = "https://congressinfor-production.up.railway.app/trades/recent"
 DATA_FILE = "data/trades.json"
 
 
-def fetch_trades(days=7, limit=500):
+def fetch_trades(days=7, limit=10):
     """Fetch recent congressional trades from the API."""
 
     print("Fetching congressional trades...")
