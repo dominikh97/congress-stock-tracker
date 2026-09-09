@@ -13,18 +13,36 @@ disclosed trades (by dollar amount) from the last 30 days.
 
 Email alerts
 ------------
-Visitors can subscribe themselves from the "Email Alerts" tab on the site:
-pick one or more politicians, enter an email, and "Continue on GitHub"
-opens a pre-filled GitHub issue (titled "Subscribe request: <email>").
-process_subscription.py (run by .github/workflows/process-subscriptions.yml
-on every new issue with that title) validates the request - the email
-must look real and every politician must match a filer name already in
-data/trades.json - appends valid entries to alerts.json, commits it,
-comments on the issue with the result, and closes it. Invalid requests get
-a rejection comment explaining why and are left open for the submitter to
-fix. A submitter needs a free GitHub account to open the issue; anyone can
-technically open one against the repo, so treat alerts.json as low-trust
-data (a bogus entry is just a JSON line to revert).
+Visitors manage their own subscription from the "Email Alerts" tab, which has
+two modes:
+
+Subscribe: pick one or more politicians, enter an email, and "Continue on
+GitHub" opens a pre-filled issue titled "Subscribe request: <email>". This
+does NOT subscribe them yet - process_subscription.py (run by
+.github/workflows/process-subscriptions.yml on every new issue matching one
+of the three title prefixes below) validates the request (real-looking
+email, every politician must match a filer name already in data/trades.json),
+records it in pending_subscriptions.json with a random token, emails a
+confirmation link to that address, comments on the issue explaining to check
+their inbox, and closes it. The link opens a second pre-filled issue titled
+"Confirm subscription: <token>"; submitting *that* is what actually moves
+the entry into alerts.json. Tokens expire after 48 hours and are single-use.
+This means a subscription can only take effect if whoever opened the first
+issue also controls the inbox it named.
+
+Unsubscribe: same tab, same politician picker (or an "unsubscribe from all"
+checkbox), opens a "Unsubscribe request: <email>" issue. This is processed
+immediately, no confirmation email - anyone who knows an address can turn
+its alerts off, which is low-harm (worst case someone has to resubscribe).
+
+Invalid or expired requests get a rejection comment explaining why and are
+left open. A submitter needs a free GitHub account to open any of these
+issues; anyone can technically open one against the repo, so treat
+alerts.json / pending_subscriptions.json as low-trust data (a bogus entry
+is just a JSON line to revert). Note that alerts.json is a plain file in a
+public repo, so subscriber emails are publicly visible - fine for a small
+group of people who know that going in, not something to point at a large
+audience without changing that.
 
 alerts.json can also be edited by hand, same format:
 

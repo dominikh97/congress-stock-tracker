@@ -11,7 +11,10 @@ permissions:
 jobs:
   process-subscription:
     runs-on: ubuntu-latest
-    if: startsWith(github.event.issue.title, 'Subscribe request:')
+    if: |
+      startsWith(github.event.issue.title, 'Subscribe request:') ||
+      startsWith(github.event.issue.title, 'Confirm subscription:') ||
+      startsWith(github.event.issue.title, 'Unsubscribe request:')
 
     steps:
       - name: Checkout repository
@@ -25,18 +28,19 @@ jobs:
       - name: Process subscription
         id: process
         env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
           ISSUE_BODY: ${{ github.event.issue.body }}
         run: |
           python process_subscription.py
 
-      - name: Commit updated alerts.json
+      - name: Commit updated subscription state
         if: steps.process.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add alerts.json
-          git commit -m "Add subscription from issue #${{ github.event.issue.number }}"
+          git add alerts.json pending_subscriptions.json
+          git commit -m "Update alert subscriptions from issue #${{ github.event.issue.number }}"
           git push
 
       - name: Comment on issue
@@ -48,7 +52,7 @@ jobs:
           gh issue comment "$ISSUE_NUMBER" --body "$COMMENT_BODY"
 
       - name: Close issue
-        if: steps.process.outputs.status == 'confirmed'
+        if: steps.process.outputs.status == 'done'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}

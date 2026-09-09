@@ -1,1 +1,3 @@
 data/new_trades.json
+__pycache__/
+*.pyc

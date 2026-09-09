@@ -132,11 +132,17 @@
 
         <section class="alerts-section">
 
-            <h2>Get emailed on new trades</h2>
-            <p class="section-hint">
+            <h2 id="alerts-heading">Get emailed on new trades</h2>
+            <p class="section-hint" id="alerts-intro">
                 Pick one or more members of Congress below. Whenever they buy or sell any
-                stock, you'll get an email as soon as it's disclosed.
+                stock, you'll get an email as soon as it's disclosed. You'll need to
+                confirm your email address before alerts start.
             </p>
+
+            <div class="mode-toggle">
+                <button type="button" class="mode-button active" id="mode-subscribe" data-mode="subscribe">Subscribe</button>
+                <button type="button" class="mode-button" id="mode-unsubscribe" data-mode="unsubscribe">Unsubscribe</button>
+            </div>
 
             <form id="alerts-form">
 
@@ -147,6 +153,13 @@
                     placeholder="you@example.com"
                     required
                 >
+
+                <div class="checkbox-row" id="unsubscribe-all-wrap" hidden>
+                    <label>
+                        <input type="checkbox" id="unsubscribe-all">
+                        Unsubscribe from all my alerts (ignores the list below)
+                    </label>
+                </div>
 
                 <label class="field-label" for="politician-search">Politicians (<span id="selected-count">0</span> selected)</label>
                 <input
@@ -165,10 +178,10 @@
 
             </form>
 
-            <p class="section-hint">
+            <p class="section-hint" id="alerts-footnote">
                 This opens a pre-filled GitHub issue with your request (a free GitHub
-                account is required to submit it). Automation confirms the subscription
-                and closes the issue within a minute or two.
+                account is required to submit it). You'll then get a confirmation email -
+                click the link inside to finish subscribing.
             </p>
 
         </section>
