@@ -56,23 +56,24 @@ async function knownMembers() {
 
 async function sendEmail(env, to, subject, text) {
 
-    const res = await fetch("https://api.sendgrid.com/v3/mail/send", {
+    const res = await fetch("https://api.brevo.com/v3/smtp/email", {
         method: "POST",
         headers: {
-            "Authorization": `Bearer ${env.SENDGRID_API_KEY}`,
+            "api-key": env.BREVO_API_KEY,
             "Content-Type": "application/json",
+            "Accept": "application/json",
         },
         body: JSON.stringify({
-            personalizations: [{ to: [{ email: to }] }],
-            from: { email: env.FROM_EMAIL, name: "Congress Stock Tracker" },
+            sender: { email: env.FROM_EMAIL, name: "Congress Stock Tracker" },
+            to: [{ email: to }],
             subject,
-            content: [{ type: "text/plain", value: text }],
+            textContent: text,
         }),
     });
 
     if (!res.ok) {
         const errText = await res.text();
-        throw new Error(`SendGrid error ${res.status}: ${errText}`);
+        throw new Error(`Brevo error ${res.status}: ${errText}`);
     }
 }
 

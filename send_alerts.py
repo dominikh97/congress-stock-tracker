@@ -76,16 +76,17 @@ def build_email_body(member, trades):
 def send_email(api_key, from_email, to_address, subject, body):
 
     response = requests.post(
-        "https://api.sendgrid.com/v3/mail/send",
+        "https://api.brevo.com/v3/smtp/email",
         headers={
-            "Authorization": f"Bearer {api_key}",
+            "api-key": api_key,
             "Content-Type": "application/json",
+            "Accept": "application/json",
         },
         json={
-            "personalizations": [{"to": [{"email": to_address}]}],
-            "from": {"email": from_email, "name": "Congress Stock Tracker"},
+            "sender": {"email": from_email, "name": "Congress Stock Tracker"},
+            "to": [{"email": to_address}],
             "subject": subject,
-            "content": [{"type": "text/plain", "value": body}],
+            "textContent": body,
         },
         timeout=15,
     )
@@ -109,12 +110,12 @@ def main():
         print("No confirmed subscriptions, nothing to alert on.")
         return
 
-    sendgrid_key = os.environ.get("SENDGRID_API_KEY")
+    brevo_key = os.environ.get("BREVO_API_KEY")
     from_email = os.environ.get("FROM_EMAIL")
 
-    if not (sendgrid_key and from_email):
+    if not (brevo_key and from_email):
         print(
-            "SENDGRID_API_KEY / FROM_EMAIL not set - skipping email alerts."
+            "BREVO_API_KEY / FROM_EMAIL not set - skipping email alerts."
         )
         return
 
@@ -133,7 +134,7 @@ def main():
         body = build_email_body(member, trades)
 
         try:
-            send_email(sendgrid_key, from_email, email, subject, body)
+            send_email(brevo_key, from_email, email, subject, body)
             print(
                 f"Sent alert to {email} for {member} "
                 f"({len(trades)} trade(s))"

@@ -39,11 +39,14 @@ sees subscriber emails just by looking at the codebase. The daily
 fetch-trades.yml workflow calls the Worker's private /alert-recipients
 endpoint (a shared API key, not the public site) to get the current
 confirmed list, matches it against newly-seen trades, and sends the actual
-alert emails via SendGrid. Email sending (both the verification link and
-the trade alerts) goes through SendGrid's HTTP API rather than SMTP,
-because Cloudflare Workers can't do raw SMTP - both the Worker and
-send_alerts.py just make a plain HTTPS POST to SendGrid, no SMTP libraries
-involved anywhere.
+alert emails via Brevo. Email sending (both the verification link and the
+trade alerts) goes through Brevo's HTTP API rather than SMTP, because
+Cloudflare Workers can't do raw SMTP - both the Worker and send_alerts.py
+just make a plain HTTPS POST to Brevo, no SMTP libraries involved
+anywhere. (Originally used SendGrid, but SendGrid retired its permanent
+free tier in mid-2025 - Brevo's free plan, 300 emails/day forever with no
+card, is the closest match: same single-sender-by-email-link verification,
+no domain/DNS needed.)
 
 Deploying the Worker (one-time setup):
 
@@ -58,14 +61,14 @@ Deploying the Worker (one-time setup):
      npx wrangler login
      npx wrangler kv namespace create SUBS_KV
 
-3. Create a free SendGrid account, verify a single sender address (Settings
-   -> Sender Authentication -> Single Sender Verification - just your own
-   email, no domain needed), and create an API key (Settings -> API Keys,
-   "Mail Send" permission is enough).
+3. Create a free Brevo account (brevo.com), go to Senders, Domains & Dedicated
+   IPs -> Senders -> add your own email as a sender and verify it via the
+   code/link Brevo emails you (no domain needed), then go to Settings ->
+   API Keys and generate one.
 
 4. Set the Worker's secrets (from cloudflare-worker/):
 
-     npx wrangler secret put SENDGRID_API_KEY
+     npx wrangler secret put BREVO_API_KEY
      npx wrangler secret put FROM_EMAIL              # the address you verified in step 3
      npx wrangler secret put SUBSCRIPTIONS_API_KEY    # any long random string you make up
 
@@ -77,11 +80,11 @@ Deploying the Worker (one-time setup):
 
 7. Add these repository secrets (Settings -> Secrets and variables ->
    Actions) so fetch-trades.yml's alert step can reach the same Worker and
-   SendGrid account:
+   Brevo account:
 
    - ALERTS_WORKER_URL     the Worker URL from step 5
    - SUBSCRIPTIONS_API_KEY the same value you set in step 4
-   - SENDGRID_API_KEY      the same key from step 3
+   - BREVO_API_KEY         the same key from step 3
    - FROM_EMAIL            the same verified sender from step 3
 
 Without those four repository secrets set, send_alerts.py just skips

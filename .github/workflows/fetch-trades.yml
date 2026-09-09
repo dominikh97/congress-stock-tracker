@@ -34,7 +34,7 @@ jobs:
         env:
           ALERTS_WORKER_URL: ${{ secrets.ALERTS_WORKER_URL }}
           SUBSCRIPTIONS_API_KEY: ${{ secrets.SUBSCRIPTIONS_API_KEY }}
-          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
           FROM_EMAIL: ${{ secrets.FROM_EMAIL }}
         run: |
           python send_alerts.py

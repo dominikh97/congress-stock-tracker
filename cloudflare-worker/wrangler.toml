@@ -7,8 +7,8 @@ kv_namespaces = [
 ]
 
 # Secrets (set with `wrangler secret put <NAME>`, not stored here):
-#   SENDGRID_API_KEY       - SendGrid API key
-#   FROM_EMAIL              - the single sender address you verified in SendGrid
+#   BREVO_API_KEY           - Brevo API key
+#   FROM_EMAIL              - the single sender address you verified in Brevo
 #   SUBSCRIPTIONS_API_KEY   - any long random string; also set as a GitHub
 #                             Actions secret so send_alerts.py can read
 #                             /alert-recipients
