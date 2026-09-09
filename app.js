@@ -4,10 +4,7 @@ const WHALE_COUNT = 5;
 const WHALE_WINDOW_DAYS = 30;
 const MAX_ALERT_MEMBERS = 20;
 
-// Set this to your deployed Worker's URL after running `wrangler deploy`
-// in cloudflare-worker/ (see README) - e.g.
-// "https://congress-stock-tracker-alerts.<your-subdomain>.workers.dev"
-const ALERTS_WORKER_URL = "";
+const ALERTS_WORKER_URL = "https://congress-stock-tracker-alerts.congress-stock-trader.workers.dev";
 
 
 let allTrades = [];
