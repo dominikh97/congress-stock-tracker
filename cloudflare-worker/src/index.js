@@ -161,7 +161,8 @@ email - nothing is activated until the link above is opened.`;
             "Confirm your Congress Stock Tracker alert subscription",
             emailBody
         );
-    } catch {
+    } catch (err) {
+        console.error("sendEmail failed:", err.message || err);
         return jsonResponse(
             { ok: false, message: "Couldn't send the confirmation email. Try again shortly." },
             502
