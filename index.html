@@ -41,6 +41,18 @@
     </section>
 
 
+    <section class="whale-section">
+
+        <h2>Top 5 Whale Trades</h2>
+        <p class="section-hint">The largest disclosed trades by dollar amount, across all tracked filings.</p>
+
+        <div id="whale-list" class="whale-list">
+            <p class="loading">Loading...</p>
+        </div>
+
+    </section>
+
+
     <section class="filters">
 
         <input
@@ -52,7 +64,7 @@
         <input
             type="text"
             id="ticker-filter"
-            placeholder="Search ticker..."
+            placeholder="Search ticker or company (e.g. Intel)..."
         >
 
         <select id="transaction-filter">
@@ -92,6 +104,8 @@
         </table>
 
     </section>
+
+    <p id="table-caption" class="section-hint"></p>
 
 </main>
 

@@ -1,7 +1,10 @@
 const DATA_URL = "data/trades.json";
+const LANDING_LIMIT = 50;
+const WHALE_COUNT = 5;
 
 
 let allTrades = [];
+let landingTrades = [];
 
 
 async function loadTrades() {
@@ -20,7 +23,12 @@ async function loadTrades() {
             (a, b) => (b.disclosed || "").localeCompare(a.disclosed || "")
         );
 
+        // Only the landing page's table is capped - stats and the
+        // whale dashboard below still reflect the full dataset.
+        landingTrades = allTrades.slice(0, LANDING_LIMIT);
+
         updateStats();
+        renderWhales();
         renderTrades();
 
     } catch (error) {
@@ -58,6 +66,57 @@ function updateStats() {
 
     document.getElementById("stock-count").textContent =
         stocks.size;
+
+    document.getElementById("table-caption").textContent =
+        `Showing latest ${landingTrades.length} of ${allTrades.length} disclosed trades.`;
+}
+
+
+function renderWhales() {
+
+    const container = document.getElementById("whale-list");
+
+    const whales = allTrades
+        .filter(t => typeof t.amount_high === "number")
+        .slice()
+        .sort((a, b) => b.amount_high - a.amount_high)
+        .slice(0, WHALE_COUNT);
+
+    if (whales.length === 0) {
+        container.innerHTML = `<p class="loading">No trade size data available.</p>`;
+        return;
+    }
+
+    container.innerHTML = whales.map((trade, index) => {
+
+        const symbol = trade.ticker || trade.company || "Unknown asset";
+
+        const transaction = (trade.trade_type || "").toUpperCase();
+
+        const transactionClass =
+            transaction.includes("BUY")
+                ? "buy"
+                : transaction.includes("SELL")
+                    ? "sell"
+                    : "";
+
+        return `
+            <div class="whale-card">
+                <div class="whale-rank">#${index + 1}</div>
+                <div class="whale-body">
+                    <div class="whale-title">
+                        <strong>${escapeHtml(symbol)}</strong>
+                        <span class="${transactionClass}">${escapeHtml(trade.trade_type)}</span>
+                    </div>
+                    <div class="whale-meta">
+                        ${escapeHtml(trade.member)} &middot; ${escapeHtml(trade.chamber)}
+                    </div>
+                    <div class="whale-amount">${escapeHtml(trade.amount)}</div>
+                </div>
+            </div>
+        `;
+
+    }).join("");
 }
 
 
@@ -79,7 +138,7 @@ function renderTrades() {
         document.getElementById("transaction-filter").value;
 
 
-    const filtered = allTrades.filter(trade => {
+    const filtered = landingTrades.filter(trade => {
 
         const politician =
             (trade.member || "").toLowerCase();
@@ -87,13 +146,20 @@ function renderTrades() {
         const ticker =
             (trade.ticker || "").toLowerCase();
 
+        const company =
+            (trade.company || "").toLowerCase();
+
         const transaction =
             (trade.trade_type || "").toUpperCase();
 
 
         return (
             politician.includes(politicianFilter) &&
-            ticker.includes(tickerFilter) &&
+            (
+                !tickerFilter ||
+                ticker.includes(tickerFilter) ||
+                company.includes(tickerFilter)
+            ) &&
             (
                 !transactionFilter ||
                 transaction.includes(transactionFilter)
@@ -142,6 +208,11 @@ function renderTrades() {
 
                 <td>
                     <strong>${escapeHtml(trade.ticker)}</strong>
+                    ${
+                        trade.company
+                            ? `<div class="ticker-company">${escapeHtml(trade.company)}</div>`
+                            : ""
+                    }
                 </td>
 
                 <td class="${transactionClass}">

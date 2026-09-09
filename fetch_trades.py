@@ -8,6 +8,7 @@ import requests
 # GitHub's raw CDN, so there's nothing to sign up for and nothing to break.
 API_URL = "https://raw.githubusercontent.com/kadoa-org/congress-trading-monitor/main/public/data/trades.json"
 DATA_FILE = "data/trades.json"
+NEW_TRADES_FILE = "data/new_trades.json"
 
 
 def normalize_trade_type(raw_type):
@@ -24,6 +25,22 @@ def normalize_trade_type(raw_type):
     return label
 
 
+def clean_company_name(asset_name):
+    """Trim the source's asset description down to a plain company name.
+
+    e.g. "Vertex Pharmaceuticals Incorporated - Common Stock" -> "Vertex
+    Pharmaceuticals Incorporated". Lets the frontend search/display by
+    company name, not just ticker.
+    """
+
+    name = (asset_name or "").strip()
+
+    if " - " in name:
+        name = name.split(" - ")[0].strip()
+
+    return name
+
+
 def normalize_trade(record):
     """Map a kadoa-org trade record onto this project's trade schema."""
 
@@ -32,8 +49,11 @@ def normalize_trade(record):
         "member": record.get("filer_name"),
         "chamber": record.get("chamber"),
         "ticker": record.get("ticker"),
+        "company": clean_company_name(record.get("asset_name")),
         "trade_type": normalize_trade_type(record.get("transaction_type")),
         "amount": record.get("amount_range_label"),
+        "amount_low": record.get("amount_range_low"),
+        "amount_high": record.get("amount_range_high"),
         "tx_date": record.get("transaction_date"),
         "disclosed": record.get("filing_date"),
         "asset": record.get("asset_name"),
@@ -122,11 +142,37 @@ def save_trades(trades):
     print(f"Saved {len(trades)} trades to {DATA_FILE}")
 
 
+def save_newly_seen(trades):
+    """Save the trades that weren't in trades.json before this run.
+
+    Consumed by send_alerts.py to notify subscribers. Not committed to
+    the repo (only data/trades.json is git-added by the workflow).
+    """
+
+    os.makedirs("data", exist_ok=True)
+
+    with open(NEW_TRADES_FILE, "w", encoding="utf-8") as f:
+        json.dump(
+            trades,
+            f,
+            indent=2,
+            ensure_ascii=False
+        )
+
+    print(f"{len(trades)} newly seen trades written to {NEW_TRADES_FILE}")
+
+
 def main():
 
     new_trades = fetch_trades()
 
     existing_trades = load_existing_trades()
+
+    existing_ids = {get_trade_id(t) for t in existing_trades}
+
+    newly_seen = [
+        t for t in new_trades if get_trade_id(t) not in existing_ids
+    ]
 
     all_trades = merge_trades(
         existing_trades,
@@ -134,6 +180,7 @@ def main():
     )
 
     save_trades(all_trades)
+    save_newly_seen(newly_seen)
 
 
 if __name__ == "__main__":

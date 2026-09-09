@@ -56,6 +56,72 @@ header p {
     font-size: 28px;
 }
 
+.section-hint {
+    color: #6b7280;
+    font-size: 13px;
+    margin: 4px 0 0;
+}
+
+.whale-section {
+    margin: 28px 0;
+}
+
+.whale-section h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.whale-list {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.whale-card {
+    display: flex;
+    gap: 10px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 14px;
+}
+
+.whale-rank {
+    font-size: 13px;
+    font-weight: 700;
+    color: #9ca3af;
+}
+
+.whale-title {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.whale-title strong {
+    font-size: 15px;
+}
+
+.whale-meta {
+    color: #6b7280;
+    font-size: 12px;
+    margin: 4px 0;
+}
+
+.whale-amount {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.ticker-company {
+    color: #6b7280;
+    font-size: 12px;
+    font-weight: normal;
+    white-space: normal;
+}
+
 .filters {
     display: flex;
     gap: 12px;
@@ -136,6 +202,10 @@ footer {
 @media (max-width: 700px) {
 
     .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .whale-list {
         grid-template-columns: 1fr;
     }
 

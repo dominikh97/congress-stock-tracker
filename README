@@ -1,1 +1,39 @@
 A Streamlit-based tracker for U.S. Congress stock transactions. It monitors publicly disclosed House and Senate trades, tracks selected politicians and their transactions, and provides alerts when new trades are reported.
+
+Data pipeline
+-------------
+fetch_trades.py runs daily (see .github/workflows/fetch-trades.yml) and pulls
+from a free, keyless, no-rate-limit feed (kadoa-org/congress-trading-monitor's
+public/data/trades.json, sourced from official House Clerk / Senate eFD /
+OGE filings). It writes the merged dataset to data/trades.json, which
+index.html / app.js reads directly. The landing page table only renders the
+50 most recent trades for faster loading; the stats and whale dashboard at
+the top still cover the full dataset.
+
+Email alerts
+------------
+To get emailed when a congress member you're watching files a new trade:
+
+1. Edit alerts.json (a JSON array) and add an entry per member you want to
+   watch, e.g.:
+
+   [
+     { "member": "Nancy Pelosi", "email": "you@example.com" }
+   ]
+
+   "member" must match the filer name exactly as it appears in
+   data/trades.json (case-insensitive).
+
+2. Add these repository secrets (Settings -> Secrets and variables ->
+   Actions) so the workflow can send mail via SMTP:
+
+   - SMTP_HOST     e.g. smtp.gmail.com
+   - SMTP_PORT     e.g. 587 (optional, defaults to 587)
+   - SMTP_USERNAME your SMTP account / email address
+   - SMTP_PASSWORD an app password (Gmail: Google Account -> Security ->
+                    2-Step Verification -> App passwords). Don't use your
+                    normal account password.
+   - SMTP_FROM     optional, defaults to SMTP_USERNAME
+
+Without those secrets set, send_alerts.py simply skips sending mail (the
+daily workflow still runs and updates trades.json normally).
