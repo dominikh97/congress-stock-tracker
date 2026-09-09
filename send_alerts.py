@@ -1,10 +1,8 @@
 import json
 import os
-
-from email_utils import load_smtp_config, send_email
+import requests
 
 NEW_TRADES_FILE = "data/new_trades.json"
-ALERTS_CONFIG_FILE = "alerts.json"
 
 
 def load_json(path, default):
@@ -17,14 +15,42 @@ def load_json(path, default):
         return json.load(f)
 
 
-def matching_subscribers(trade, subscriptions):
-    """Subscriptions whose member name matches this trade's filer."""
+def fetch_subscriptions():
+    """Pull confirmed subscriptions from the Cloudflare Worker.
+
+    Returns None (meaning "skip, nothing configured") when the Worker
+    URL or API key aren't set, so a fresh checkout without secrets
+    doesn't fail the daily fetch job.
+    """
+
+    worker_url = os.environ.get("ALERTS_WORKER_URL", "").rstrip("/")
+    api_key = os.environ.get("SUBSCRIPTIONS_API_KEY")
+
+    if not worker_url or not api_key:
+        print(
+            "ALERTS_WORKER_URL / SUBSCRIPTIONS_API_KEY not set - "
+            "skipping email alerts."
+        )
+        return None
+
+    response = requests.get(
+        f"{worker_url}/alert-recipients",
+        headers={"X-Api-Key": api_key},
+        timeout=15,
+    )
+    response.raise_for_status()
+
+    return response.json()
+
+
+def matching_emails(trade, subscriptions):
+    """Subscriber emails whose member list includes this trade's filer."""
 
     member = (trade.get("member") or "").strip().lower()
 
     return [
-        sub for sub in subscriptions
-        if (sub.get("member") or "").strip().lower() == member
+        sub["email"] for sub in subscriptions
+        if member in {m.strip().lower() for m in sub.get("members", [])}
     ]
 
 
@@ -47,25 +73,48 @@ def build_email_body(member, trades):
     return "\n".join(lines)
 
 
+def send_email(api_key, from_email, to_address, subject, body):
+
+    response = requests.post(
+        "https://api.sendgrid.com/v3/mail/send",
+        headers={
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        },
+        json={
+            "personalizations": [{"to": [{"email": to_address}]}],
+            "from": {"email": from_email, "name": "Congress Stock Tracker"},
+            "subject": subject,
+            "content": [{"type": "text/plain", "value": body}],
+        },
+        timeout=15,
+    )
+    response.raise_for_status()
+
+
 def main():
 
     new_trades = load_json(NEW_TRADES_FILE, [])
-    subscriptions = load_json(ALERTS_CONFIG_FILE, [])
 
     if not new_trades:
         print("No newly seen trades, nothing to alert on.")
         return
 
-    if not subscriptions:
-        print("No entries in alerts.json, nothing to alert on.")
+    subscriptions = fetch_subscriptions()
+
+    if subscriptions is None:
         return
 
-    smtp_config = load_smtp_config()
+    if not subscriptions:
+        print("No confirmed subscriptions, nothing to alert on.")
+        return
 
-    if smtp_config is None:
+    sendgrid_key = os.environ.get("SENDGRID_API_KEY")
+    from_email = os.environ.get("FROM_EMAIL")
+
+    if not (sendgrid_key and from_email):
         print(
-            "SMTP_HOST / SMTP_USERNAME / SMTP_PASSWORD are not set "
-            "(see README) - skipping email alerts."
+            "SENDGRID_API_KEY / FROM_EMAIL not set - skipping email alerts."
         )
         return
 
@@ -74,8 +123,8 @@ def main():
     per_recipient = {}
 
     for trade in new_trades:
-        for sub in matching_subscribers(trade, subscriptions):
-            key = (sub["email"], trade.get("member"))
+        for email in matching_emails(trade, subscriptions):
+            key = (email, trade.get("member"))
             per_recipient.setdefault(key, []).append(trade)
 
     for (email, member), trades in per_recipient.items():
@@ -84,7 +133,7 @@ def main():
         body = build_email_body(member, trades)
 
         try:
-            send_email(smtp_config, email, subject, body)
+            send_email(sendgrid_key, from_email, email, subject, body)
             print(
                 f"Sent alert to {email} for {member} "
                 f"({len(trades)} trade(s))"

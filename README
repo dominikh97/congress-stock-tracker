@@ -13,57 +13,78 @@ disclosed trades (by dollar amount) from the last 30 days.
 
 Email alerts
 ------------
-Visitors manage their own subscription from the "Email Alerts" tab, which has
-two modes:
+Visitors manage their own subscription entirely from the "Email Alerts" tab -
+no GitHub tab opens, and subscriber emails are never stored anywhere in this
+repo (see architecture below).
 
-Subscribe: pick one or more politicians, enter an email, and "Continue on
-GitHub" opens a pre-filled issue titled "Subscribe request: <email>". This
-does NOT subscribe them yet - process_subscription.py (run by
-.github/workflows/process-subscriptions.yml on every new issue matching one
-of the three title prefixes below) validates the request (real-looking
-email, every politician must match a filer name already in data/trades.json),
-records it in pending_subscriptions.json with a random token, emails a
-confirmation link to that address, comments on the issue explaining to check
-their inbox, and closes it. The link opens a second pre-filled issue titled
-"Confirm subscription: <token>"; submitting *that* is what actually moves
-the entry into alerts.json. Tokens expire after 48 hours and are single-use.
-This means a subscription can only take effect if whoever opened the first
-issue also controls the inbox it named.
+Subscribe: pick one or more politicians, enter an email, hit Subscribe. The
+site POSTs directly to a small Cloudflare Worker, which validates the
+request (real-looking email, every politician must match a filer name
+already in data/trades.json), emails a verification link to that address,
+and only records a *pending* request (under a random, single-use, 48-hour
+token) - nothing is active yet. Clicking the link in the email hits the
+Worker again, which moves the request into confirmed state and shows a
+plain confirmation page naming exactly which politicians are now tracked.
+A subscription can only activate if whoever submitted the form also
+controls that inbox.
 
 Unsubscribe: same tab, same politician picker (or an "unsubscribe from all"
-checkbox), opens a "Unsubscribe request: <email>" issue. This is processed
-immediately, no confirmation email - anyone who knows an address can turn
-its alerts off, which is low-harm (worst case someone has to resubscribe).
+checkbox). This POSTs straight to the Worker and takes effect immediately,
+no confirmation email - anyone who knows an address can turn its alerts
+off, which is low-harm (worst case someone has to resubscribe).
 
-Invalid or expired requests get a rejection comment explaining why and are
-left open. A submitter needs a free GitHub account to open any of these
-issues; anyone can technically open one against the repo, so treat
-alerts.json / pending_subscriptions.json as low-trust data (a bogus entry
-is just a JSON line to revert). Note that alerts.json is a plain file in a
-public repo, so subscriber emails are publicly visible - fine for a small
-group of people who know that going in, not something to point at a large
-audience without changing that.
+Architecture: the Worker (cloudflare-worker/) stores subscriptions in
+Cloudflare KV, not in this git repo - so nobody, including the repo owner,
+sees subscriber emails just by looking at the codebase. The daily
+fetch-trades.yml workflow calls the Worker's private /alert-recipients
+endpoint (a shared API key, not the public site) to get the current
+confirmed list, matches it against newly-seen trades, and sends the actual
+alert emails via SendGrid. Email sending (both the verification link and
+the trade alerts) goes through SendGrid's HTTP API rather than SMTP,
+because Cloudflare Workers can't do raw SMTP - both the Worker and
+send_alerts.py just make a plain HTTPS POST to SendGrid, no SMTP libraries
+involved anywhere.
 
-alerts.json can also be edited by hand, same format:
+Deploying the Worker (one-time setup):
 
-   [
-     { "member": "Nancy Pelosi", "email": "you@example.com" }
-   ]
+1. Create a free Cloudflare account (no credit card) and install the CLI:
+   `npm install -g wrangler` (or use `npx wrangler` as below without
+   installing globally).
 
-   "member" must match the filer name exactly as it appears in
-   data/trades.json (case-insensitive).
+2. From cloudflare-worker/, create the KV namespace and paste the id it
+   prints into wrangler.toml's `kv_namespaces` entry (replacing
+   REPLACE_WITH_YOUR_KV_NAMESPACE_ID):
 
-To actually send the mail, add these repository secrets (Settings ->
-Secrets and variables -> Actions) so fetch-trades.yml's alert step can
-reach an SMTP server:
+     npx wrangler login
+     npx wrangler kv namespace create SUBS_KV
 
-   - SMTP_HOST     e.g. smtp.gmail.com
-   - SMTP_PORT     e.g. 587 (optional, defaults to 587)
-   - SMTP_USERNAME your SMTP account / email address
-   - SMTP_PASSWORD an app password (Gmail: Google Account -> Security ->
-                    2-Step Verification -> App passwords). Don't use your
-                    normal account password.
-   - SMTP_FROM     optional, defaults to SMTP_USERNAME
+3. Create a free SendGrid account, verify a single sender address (Settings
+   -> Sender Authentication -> Single Sender Verification - just your own
+   email, no domain needed), and create an API key (Settings -> API Keys,
+   "Mail Send" permission is enough).
 
-Without those secrets set, send_alerts.py simply skips sending mail (the
-daily workflow still runs and updates trades.json normally).
+4. Set the Worker's secrets (from cloudflare-worker/):
+
+     npx wrangler secret put SENDGRID_API_KEY
+     npx wrangler secret put FROM_EMAIL              # the address you verified in step 3
+     npx wrangler secret put SUBSCRIPTIONS_API_KEY    # any long random string you make up
+
+5. Deploy: `npx wrangler deploy`. It prints the Worker's URL
+   (something like https://congress-stock-tracker-alerts.<subdomain>.workers.dev).
+
+6. Paste that URL into the `ALERTS_WORKER_URL` constant at the top of
+   app.js and push - the Email Alerts tab is now live.
+
+7. Add these repository secrets (Settings -> Secrets and variables ->
+   Actions) so fetch-trades.yml's alert step can reach the same Worker and
+   SendGrid account:
+
+   - ALERTS_WORKER_URL     the Worker URL from step 5
+   - SUBSCRIPTIONS_API_KEY the same value you set in step 4
+   - SENDGRID_API_KEY      the same key from step 3
+   - FROM_EMAIL            the same verified sender from step 3
+
+Without those four repository secrets set, send_alerts.py just skips
+sending mail (the daily workflow still runs and updates trades.json
+normally) - and without ALERTS_WORKER_URL set in app.js, the Email Alerts
+tab tells visitors it isn't set up yet instead of silently failing.
