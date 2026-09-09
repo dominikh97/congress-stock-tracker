@@ -61,42 +61,41 @@
         </section>
 
 
-        <section class="filters">
-
-            <input
-                type="text"
-                id="politician-filter"
-                placeholder="Search politician..."
-            >
-
-            <input
-                type="text"
-                id="ticker-filter"
-                placeholder="Search ticker or company (e.g. Intel)..."
-            >
-
-            <select id="transaction-filter">
-                <option value="">All transactions</option>
-                <option value="BUY">Buy</option>
-                <option value="SELL">Sell</option>
-            </select>
-
-        </section>
-
-
         <section class="table-container">
 
             <table>
 
                 <thead>
-                    <tr>
-                        <th>Politician</th>
-                        <th>Chamber</th>
-                        <th>Ticker</th>
-                        <th>Transaction</th>
-                        <th>Amount</th>
-                        <th>Transaction Date</th>
-                        <th>Disclosed</th>
+                    <tr class="header-labels">
+                        <th data-sort="member">Politician <span class="sort-indicator"></span></th>
+                        <th data-sort="chamber">Chamber <span class="sort-indicator"></span></th>
+                        <th data-sort="ticker">Ticker <span class="sort-indicator"></span></th>
+                        <th data-sort="trade_type">Transaction <span class="sort-indicator"></span></th>
+                        <th data-sort="amount">Amount <span class="sort-indicator"></span></th>
+                        <th data-sort="tx_date">Transaction Date <span class="sort-indicator"></span></th>
+                        <th data-sort="disclosed">Disclosed <span class="sort-indicator"></span></th>
+                        <th></th>
+                    </tr>
+                    <tr class="header-filters">
+                        <th><input type="text" id="filter-member" placeholder="Filter..."></th>
+                        <th>
+                            <select id="filter-chamber">
+                                <option value="">All</option>
+                                <option value="house">House</option>
+                                <option value="senate">Senate</option>
+                            </select>
+                        </th>
+                        <th><input type="text" id="filter-ticker" placeholder="Ticker or company..."></th>
+                        <th>
+                            <select id="filter-trade_type">
+                                <option value="">All</option>
+                                <option value="BUY">Buy</option>
+                                <option value="SELL">Sell</option>
+                            </select>
+                        </th>
+                        <th><input type="text" id="filter-amount" placeholder="Filter..."></th>
+                        <th><input type="text" id="filter-tx_date" placeholder="YYYY-MM-DD..."></th>
+                        <th><input type="text" id="filter-disclosed" placeholder="YYYY-MM-DD..."></th>
                         <th></th>
                     </tr>
                 </thead>

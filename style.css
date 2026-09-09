@@ -149,25 +149,6 @@ header p {
     white-space: normal;
 }
 
-.filters {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 20px;
-}
-
-.filters input,
-.filters select {
-    padding: 11px 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    background: white;
-    font-size: 14px;
-}
-
-.filters input {
-    flex: 1;
-}
-
 .table-container {
     background: white;
     border: 1px solid #e5e7eb;
@@ -196,6 +177,38 @@ th {
 
 td {
     font-size: 14px;
+}
+
+.header-labels th[data-sort] {
+    cursor: pointer;
+    user-select: none;
+}
+
+.header-labels th[data-sort]:hover {
+    color: #111827;
+}
+
+.sort-indicator {
+    display: inline-block;
+    width: 10px;
+    color: #111827;
+    font-size: 10px;
+}
+
+.header-filters th {
+    padding: 8px 16px 12px;
+}
+
+.header-filters input,
+.header-filters select {
+    width: 100%;
+    padding: 7px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    background: white;
+    font-size: 13px;
+    font-weight: normal;
+    color: #202124;
 }
 
 .buy {
@@ -382,10 +395,6 @@ footer {
 
     .whale-list {
         grid-template-columns: 1fr;
-    }
-
-    .filters {
-        flex-direction: column;
     }
 
     .pagination {

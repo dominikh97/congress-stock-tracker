@@ -12,6 +12,8 @@ let allMembers = [];
 let currentPage = 1;
 let selectedMembers = new Set();
 let alertsMode = "subscribe";
+let sortColumn = "disclosed";
+let sortDirection = "desc";
 
 
 async function loadTrades() {
@@ -26,9 +28,7 @@ async function loadTrades() {
 
         const trades = await response.json();
 
-        allTrades = trades.slice().sort(
-            (a, b) => (b.disclosed || "").localeCompare(a.disclosed || "")
-        );
+        allTrades = trades;
 
         allMembers = [...new Set(
             allTrades.map(t => t.member).filter(Boolean)
@@ -134,49 +134,75 @@ function renderWhales() {
 
 function getFilteredTrades() {
 
-    const politicianFilter =
-        document
-            .getElementById("politician-filter")
-            .value
-            .toLowerCase();
-
-    const tickerFilter =
-        document
-            .getElementById("ticker-filter")
-            .value
-            .toLowerCase();
-
-    const transactionFilter =
-        document.getElementById("transaction-filter").value;
+    const memberFilter = document.getElementById("filter-member").value.toLowerCase();
+    const chamberFilter = document.getElementById("filter-chamber").value;
+    const tickerFilter = document.getElementById("filter-ticker").value.toLowerCase();
+    const tradeTypeFilter = document.getElementById("filter-trade_type").value;
+    const amountFilter = document.getElementById("filter-amount").value.toLowerCase();
+    const txDateFilter = document.getElementById("filter-tx_date").value.toLowerCase();
+    const disclosedFilter = document.getElementById("filter-disclosed").value.toLowerCase();
 
 
     return allTrades.filter(trade => {
 
-        const politician =
-            (trade.member || "").toLowerCase();
-
-        const ticker =
-            (trade.ticker || "").toLowerCase();
-
-        const company =
-            (trade.company || "").toLowerCase();
-
-        const transaction =
-            (trade.trade_type || "").toUpperCase();
+        const member = (trade.member || "").toLowerCase();
+        const chamber = (trade.chamber || "").toLowerCase();
+        const ticker = (trade.ticker || "").toLowerCase();
+        const company = (trade.company || "").toLowerCase();
+        const tradeType = (trade.trade_type || "").toUpperCase();
+        const amount = (trade.amount || "").toLowerCase();
+        const txDate = (trade.tx_date || "").toLowerCase();
+        const disclosed = (trade.disclosed || "").toLowerCase();
 
 
         return (
-            politician.includes(politicianFilter) &&
+            member.includes(memberFilter) &&
+            (!chamberFilter || chamber === chamberFilter) &&
             (
                 !tickerFilter ||
                 ticker.includes(tickerFilter) ||
                 company.includes(tickerFilter)
             ) &&
-            (
-                !transactionFilter ||
-                transaction.includes(transactionFilter)
-            )
+            (!tradeTypeFilter || tradeType.includes(tradeTypeFilter)) &&
+            amount.includes(amountFilter) &&
+            txDate.includes(txDateFilter) &&
+            disclosed.includes(disclosedFilter)
         );
+    });
+}
+
+
+function sortValue(trade, column) {
+
+    if (column === "amount") {
+        return typeof trade.amount_high === "number" ? trade.amount_high : -1;
+    }
+
+    return (trade[column] || "").toString().toLowerCase();
+}
+
+
+function compareTrades(a, b) {
+
+    const av = sortValue(a, sortColumn);
+    const bv = sortValue(b, sortColumn);
+
+    if (av < bv) return sortDirection === "asc" ? -1 : 1;
+    if (av > bv) return sortDirection === "asc" ? 1 : -1;
+    return 0;
+}
+
+
+function updateSortIndicators() {
+
+    document.querySelectorAll("th[data-sort]").forEach(th => {
+
+        const indicator = th.querySelector(".sort-indicator");
+        if (!indicator) return;
+
+        indicator.textContent = th.dataset.sort === sortColumn
+            ? (sortDirection === "asc" ? "▲" : "▼")
+            : "";
     });
 }
 
@@ -185,7 +211,9 @@ function renderTrades() {
 
     // Search always runs over the full dataset - only the page shown
     // in the table is capped, for faster rendering.
-    const filtered = getFilteredTrades();
+    const filtered = getFilteredTrades().sort(compareTrades);
+
+    updateSortIndicators();
 
     const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
 
@@ -433,19 +461,33 @@ document.querySelectorAll(".tab-button").forEach(button => {
 });
 
 
-// --- Trades tab: filters + pagination ------------------------------
+// --- Trades tab: sorting + filters + pagination ---------------------
 
-document
-    .getElementById("politician-filter")
-    .addEventListener("input", applyFiltersAndRender);
+document.querySelectorAll("th[data-sort]").forEach(th => {
 
-document
-    .getElementById("ticker-filter")
-    .addEventListener("input", applyFiltersAndRender);
+    th.addEventListener("click", () => {
 
-document
-    .getElementById("transaction-filter")
-    .addEventListener("change", applyFiltersAndRender);
+        const column = th.dataset.sort;
+
+        if (sortColumn === column) {
+            sortDirection = sortDirection === "asc" ? "desc" : "asc";
+        } else {
+            sortColumn = column;
+            sortDirection = "asc";
+        }
+
+        currentPage = 1;
+        renderTrades();
+    });
+});
+
+["filter-member", "filter-ticker", "filter-amount", "filter-tx_date", "filter-disclosed"].forEach(id => {
+    document.getElementById(id).addEventListener("input", applyFiltersAndRender);
+});
+
+["filter-chamber", "filter-trade_type"].forEach(id => {
+    document.getElementById(id).addEventListener("change", applyFiltersAndRender);
+});
 
 document
     .getElementById("page-first")
