@@ -3,7 +3,7 @@ main = "src/index.js"
 compatibility_date = "2024-11-01"
 
 kv_namespaces = [
-  { binding = "SUBS_KV", id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID" }
+  { binding = "SUBS_KV", id = "86b16f1ec37c425099bc195af4a76b8b" }
 ]
 
 # Secrets (set with `wrangler secret put <NAME>`, not stored here):
