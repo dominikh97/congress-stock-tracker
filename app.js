@@ -1,8 +1,4 @@
-const SUPABASE_URL = "https://oalpdiiwxwoqmvwvpyvh.supabase.co/rest/v1/";
-const SUPABASE_KEY = "sb_publishable_3v1oHDBWDuFjuSP-DRgxIg_P7MPGR9Q";
-
-const API_URL =
-    "https://congressinfor-production.up.railway.app/trades/recent?days=30";
+const DATA_URL = "data/trades.json";
 
 
 let allTrades = [];
@@ -12,15 +8,17 @@ async function loadTrades() {
 
     try {
 
-        const response = await fetch(API_URL);
+        const response = await fetch(DATA_URL);
 
         if (!response.ok) {
-            throw new Error("API request failed");
+            throw new Error("Failed to load trades.json");
         }
 
-        const data = await response.json();
+        const trades = await response.json();
 
-        allTrades = data.trades || [];
+        allTrades = trades.slice().sort(
+            (a, b) => (b.disclosed || "").localeCompare(a.disclosed || "")
+        );
 
         updateStats();
         renderTrades();
