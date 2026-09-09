@@ -2,31 +2,65 @@ import json
 import os
 import requests
 
-API_URL = "https://www.bargo.ai/free-apis/congress/v1/trades"
+# Free, keyless, no-rate-limit JSON feed. Committed daily to a public MIT
+# repo that aggregates House Clerk PTRs, Senate eFD filings and OGE
+# executive filings (kadoa-org/congress-trading-monitor). Served over
+# GitHub's raw CDN, so there's nothing to sign up for and nothing to break.
+API_URL = "https://raw.githubusercontent.com/kadoa-org/congress-trading-monitor/main/public/data/trades.json"
 DATA_FILE = "data/trades.json"
 
 
-def fetch_trades(limit=100):
-    """Fetch the most recent congressional trades from Bargo."""
+def normalize_trade_type(raw_type):
+    """Collapse the source's STOCK Act wording into Buy/Sell/<raw>."""
+
+    label = (raw_type or "").strip()
+
+    if label.startswith("Purchase"):
+        return "Buy"
+
+    if label.startswith("Sale"):
+        return "Sell"
+
+    return label
+
+
+def normalize_trade(record):
+    """Map a kadoa-org trade record onto this project's trade schema."""
+
+    return {
+        "id": record.get("id"),
+        "member": record.get("filer_name"),
+        "chamber": record.get("chamber"),
+        "ticker": record.get("ticker"),
+        "trade_type": normalize_trade_type(record.get("transaction_type")),
+        "amount": record.get("amount_range_label"),
+        "tx_date": record.get("transaction_date"),
+        "disclosed": record.get("filing_date"),
+        "asset": record.get("asset_name"),
+        "link": record.get("doc_url"),
+    }
+
+
+def fetch_trades():
+    """Fetch the latest congressional trades feed and normalize it."""
 
     print("Fetching congressional trades...")
 
-    response = requests.get(
-        API_URL,
-        params={
-            "limit": limit,
-            "page": 0
-        },
-        timeout=30
-    )
+    response = requests.get(API_URL, timeout=30)
 
     print("Status code:", response.status_code)
 
     response.raise_for_status()
 
-    data = response.json()
+    records = response.json()
 
-    trades = data.get("trades", [])
+    # Congress-only: the feed also carries OGE executive-branch filings,
+    # which fall outside this tracker's scope and lack a chamber value.
+    congress_records = [
+        r for r in records if r.get("chamber") in ("house", "senate")
+    ]
+
+    trades = [normalize_trade(r) for r in congress_records]
 
     print(f"Fetched {len(trades)} trades")
 
@@ -49,20 +83,9 @@ def load_existing_trades():
 
 
 def get_trade_id(trade):
-    """Create a stable ID for a trade."""
+    """Use the source's own stable trade ID."""
 
-    # Bargo does not necessarily provide the same ID
-    # structure as the previous API, so construct one
-    # from the identifying trade fields.
-
-    return "|".join([
-        str(trade.get("member", "")),
-        str(trade.get("ticker", "")),
-        str(trade.get("type", "")),
-        str(trade.get("transaction_date", "")),
-        str(trade.get("disclosure_date", "")),
-        str(trade.get("amount_range", ""))
-    ])
+    return str(trade.get("id", ""))
 
 
 def merge_trades(existing, new):
