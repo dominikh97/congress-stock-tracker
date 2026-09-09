@@ -1,0 +1,56 @@
+name: Process Trade Alert Subscriptions
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  process-subscription:
+    runs-on: ubuntu-latest
+    if: startsWith(github.event.issue.title, 'Subscribe request:')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Process subscription
+        id: process
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+        run: |
+          python process_subscription.py
+
+      - name: Commit updated alerts.json
+        if: steps.process.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add alerts.json
+          git commit -m "Add subscription from issue #${{ github.event.issue.number }}"
+          git push
+
+      - name: Comment on issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          COMMENT_BODY: ${{ steps.process.outputs.message }}
+        run: |
+          gh issue comment "$ISSUE_NUMBER" --body "$COMMENT_BODY"
+
+      - name: Close issue
+        if: steps.process.outputs.status == 'confirmed'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          gh issue close "$ISSUE_NUMBER"

@@ -21,91 +21,159 @@
 
 <main class="container">
 
-    <section class="stats">
+    <nav class="tabs">
+        <button type="button" class="tab-button active" id="tab-btn-trades" data-tab="trades">Trades</button>
+        <button type="button" class="tab-button" id="tab-btn-alerts" data-tab="alerts">Email Alerts</button>
+    </nav>
 
-        <div class="stat-card">
-            <span>Trades</span>
-            <strong id="trade-count">—</strong>
+
+    <div id="tab-trades" class="tab-panel">
+
+        <section class="stats">
+
+            <div class="stat-card">
+                <span>Trades</span>
+                <strong id="trade-count">—</strong>
+            </div>
+
+            <div class="stat-card">
+                <span>Politicians</span>
+                <strong id="politician-count">—</strong>
+            </div>
+
+            <div class="stat-card">
+                <span>Stocks</span>
+                <strong id="stock-count">—</strong>
+            </div>
+
+        </section>
+
+
+        <section class="whale-section">
+
+            <h2>Top 5 Whale Trades</h2>
+            <p class="section-hint">The largest disclosed trades by dollar amount, in the last 30 days.</p>
+
+            <div id="whale-list" class="whale-list">
+                <p class="loading">Loading...</p>
+            </div>
+
+        </section>
+
+
+        <section class="filters">
+
+            <input
+                type="text"
+                id="politician-filter"
+                placeholder="Search politician..."
+            >
+
+            <input
+                type="text"
+                id="ticker-filter"
+                placeholder="Search ticker or company (e.g. Intel)..."
+            >
+
+            <select id="transaction-filter">
+                <option value="">All transactions</option>
+                <option value="BUY">Buy</option>
+                <option value="SELL">Sell</option>
+            </select>
+
+        </section>
+
+
+        <section class="table-container">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Politician</th>
+                        <th>Chamber</th>
+                        <th>Ticker</th>
+                        <th>Transaction</th>
+                        <th>Amount</th>
+                        <th>Transaction Date</th>
+                        <th>Disclosed</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody id="trades-table">
+                    <tr>
+                        <td colspan="8" class="loading">
+                            Loading trades...
+                        </td>
+                    </tr>
+                </tbody>
+
+            </table>
+
+        </section>
+
+        <div class="pagination">
+            <p id="table-caption" class="section-hint"></p>
+
+            <div class="pagination-controls">
+                <button type="button" id="page-first" disabled>&laquo; First</button>
+                <button type="button" id="page-prev" disabled>&lsaquo; Prev</button>
+                <span id="page-indicator">Page 1 of 1</span>
+                <button type="button" id="page-next" disabled>Next &rsaquo;</button>
+                <button type="button" id="page-last" disabled>Last &raquo;</button>
+            </div>
         </div>
 
-        <div class="stat-card">
-            <span>Politicians</span>
-            <strong id="politician-count">—</strong>
-        </div>
-
-        <div class="stat-card">
-            <span>Stocks</span>
-            <strong id="stock-count">—</strong>
-        </div>
-
-    </section>
+    </div>
 
 
-    <section class="whale-section">
+    <div id="tab-alerts" class="tab-panel" hidden>
 
-        <h2>Top 5 Whale Trades</h2>
-        <p class="section-hint">The largest disclosed trades by dollar amount, across all tracked filings.</p>
+        <section class="alerts-section">
 
-        <div id="whale-list" class="whale-list">
-            <p class="loading">Loading...</p>
-        </div>
+            <h2>Get emailed on new trades</h2>
+            <p class="section-hint">
+                Pick one or more members of Congress below. Whenever they buy or sell any
+                stock, you'll get an email as soon as it's disclosed.
+            </p>
 
-    </section>
+            <form id="alerts-form">
 
+                <label class="field-label" for="alerts-email">Your email</label>
+                <input
+                    type="email"
+                    id="alerts-email"
+                    placeholder="you@example.com"
+                    required
+                >
 
-    <section class="filters">
+                <label class="field-label" for="politician-search">Politicians (<span id="selected-count">0</span> selected)</label>
+                <input
+                    type="text"
+                    id="politician-search"
+                    placeholder="Filter the list..."
+                >
 
-        <input
-            type="text"
-            id="politician-filter"
-            placeholder="Search politician..."
-        >
+                <div id="politician-picker" class="politician-picker">
+                    <p class="loading">Loading politicians...</p>
+                </div>
 
-        <input
-            type="text"
-            id="ticker-filter"
-            placeholder="Search ticker or company (e.g. Intel)..."
-        >
+                <button type="submit" id="alerts-submit">Continue on GitHub &rarr;</button>
 
-        <select id="transaction-filter">
-            <option value="">All transactions</option>
-            <option value="BUY">Buy</option>
-            <option value="SELL">Sell</option>
-        </select>
+                <p id="alerts-status" class="section-hint"></p>
 
-    </section>
+            </form>
 
+            <p class="section-hint">
+                This opens a pre-filled GitHub issue with your request (a free GitHub
+                account is required to submit it). Automation confirms the subscription
+                and closes the issue within a minute or two.
+            </p>
 
-    <section class="table-container">
+        </section>
 
-        <table>
-
-            <thead>
-                <tr>
-                    <th>Politician</th>
-                    <th>Chamber</th>
-                    <th>Ticker</th>
-                    <th>Transaction</th>
-                    <th>Amount</th>
-                    <th>Transaction Date</th>
-                    <th>Disclosed</th>
-                    <th></th>
-                </tr>
-            </thead>
-
-            <tbody id="trades-table">
-                <tr>
-                    <td colspan="8" class="loading">
-                        Loading trades...
-                    </td>
-                </tr>
-            </tbody>
-
-        </table>
-
-    </section>
-
-    <p id="table-caption" class="section-hint"></p>
+    </div>
 
 </main>
 

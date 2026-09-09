@@ -31,6 +31,33 @@ header p {
     color: #cbd5e1;
 }
 
+.tabs {
+    display: flex;
+    gap: 4px;
+    margin-top: 28px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.tab-button {
+    padding: 10px 16px;
+    border: none;
+    background: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: #6b7280;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+
+.tab-button:hover {
+    color: #111827;
+}
+
+.tab-button.active {
+    color: #111827;
+    border-bottom-color: #111827;
+}
+
 .stats {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -192,6 +219,119 @@ a {
     color: #6b7280;
 }
 
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pagination-controls button {
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: white;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.pagination-controls button:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.pagination-controls button:not(:disabled):hover {
+    background: #f3f4f6;
+}
+
+#page-indicator {
+    font-size: 13px;
+    color: #374151;
+    min-width: 110px;
+    text-align: center;
+}
+
+.alerts-section {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 24px;
+    margin: 28px 0;
+    max-width: 560px;
+}
+
+.alerts-section h2 {
+    margin: 0 0 6px;
+    font-size: 20px;
+}
+
+.field-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #374151;
+    margin: 18px 0 6px;
+}
+
+#alerts-form input[type="email"],
+#alerts-form input[type="text"] {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.politician-picker {
+    margin-top: 10px;
+    max-height: 260px;
+    overflow-y: auto;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 8px;
+}
+
+.politician-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.politician-option:hover {
+    background: #f9fafb;
+}
+
+#alerts-submit {
+    margin-top: 20px;
+    padding: 11px 18px;
+    border: none;
+    border-radius: 6px;
+    background: #111827;
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#alerts-submit:hover {
+    background: #1f2937;
+}
+
+#alerts-status {
+    min-height: 18px;
+}
+
 footer {
     margin-top: 40px;
     padding: 24px 0;
@@ -211,5 +351,10 @@ footer {
 
     .filters {
         flex-direction: column;
+    }
+
+    .pagination {
+        flex-direction: column;
+        align-items: flex-start;
     }
 }

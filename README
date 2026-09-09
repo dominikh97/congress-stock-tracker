@@ -6,16 +6,27 @@ fetch_trades.py runs daily (see .github/workflows/fetch-trades.yml) and pulls
 from a free, keyless, no-rate-limit feed (kadoa-org/congress-trading-monitor's
 public/data/trades.json, sourced from official House Clerk / Senate eFD /
 OGE filings). It writes the merged dataset to data/trades.json, which
-index.html / app.js reads directly. The landing page table only renders the
-50 most recent trades for faster loading; the stats and whale dashboard at
-the top still cover the full dataset.
+index.html / app.js reads directly. Search always runs over the full
+dataset; the table just paginates the matches 50 at a time so it stays
+fast to render. The "Top 5 Whale Trades" dashboard highlights the largest
+disclosed trades (by dollar amount) from the last 30 days.
 
 Email alerts
 ------------
-To get emailed when a congress member you're watching files a new trade:
+Visitors can subscribe themselves from the "Email Alerts" tab on the site:
+pick one or more politicians, enter an email, and "Continue on GitHub"
+opens a pre-filled GitHub issue (titled "Subscribe request: <email>").
+process_subscription.py (run by .github/workflows/process-subscriptions.yml
+on every new issue with that title) validates the request - the email
+must look real and every politician must match a filer name already in
+data/trades.json - appends valid entries to alerts.json, commits it,
+comments on the issue with the result, and closes it. Invalid requests get
+a rejection comment explaining why and are left open for the submitter to
+fix. A submitter needs a free GitHub account to open the issue; anyone can
+technically open one against the repo, so treat alerts.json as low-trust
+data (a bogus entry is just a JSON line to revert).
 
-1. Edit alerts.json (a JSON array) and add an entry per member you want to
-   watch, e.g.:
+alerts.json can also be edited by hand, same format:
 
    [
      { "member": "Nancy Pelosi", "email": "you@example.com" }
@@ -24,8 +35,9 @@ To get emailed when a congress member you're watching files a new trade:
    "member" must match the filer name exactly as it appears in
    data/trades.json (case-insensitive).
 
-2. Add these repository secrets (Settings -> Secrets and variables ->
-   Actions) so the workflow can send mail via SMTP:
+To actually send the mail, add these repository secrets (Settings ->
+Secrets and variables -> Actions) so fetch-trades.yml's alert step can
+reach an SMTP server:
 
    - SMTP_HOST     e.g. smtp.gmail.com
    - SMTP_PORT     e.g. 587 (optional, defaults to 587)
