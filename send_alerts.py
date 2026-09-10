@@ -33,14 +33,20 @@ def fetch_subscriptions():
         )
         return None
 
-    response = requests.get(
-        f"{worker_url}/alert-recipients",
-        headers={"X-Api-Key": api_key},
-        timeout=15,
-    )
-    response.raise_for_status()
-
-    return response.json()
+    # Alerting is a secondary feature - any failure here (bad key,
+    # Worker down, network hiccup) must never take down the trades
+    # fetch/commit that runs alongside it, so this never raises.
+    try:
+        response = requests.get(
+            f"{worker_url}/alert-recipients",
+            headers={"X-Api-Key": api_key},
+            timeout=15,
+        )
+        response.raise_for_status()
+        return response.json()
+    except Exception as exc:
+        print(f"Couldn't reach the alerts Worker, skipping email alerts: {exc}")
+        return None
 
 
 def matching_emails(trade, subscriptions):
@@ -144,4 +150,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # Alerting must never be able to fail the daily fetch job - a bug
+    # here should be visible in the logs, not block data/trades.json
+    # from being committed.
+    try:
+        main()
+    except Exception as exc:
+        print(f"send_alerts.py failed unexpectedly, continuing anyway: {exc}")

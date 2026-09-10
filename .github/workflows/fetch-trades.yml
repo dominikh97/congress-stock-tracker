@@ -31,6 +31,11 @@ jobs:
           python fetch_trades.py
 
       - name: Send trade alerts
+        # Alerting is secondary to publishing trades data - never let a
+        # failure here (bad secret, Worker down, etc.) block the commit
+        # step below. send_alerts.py also catches its own errors, this
+        # is a second layer of defense against the unexpected.
+        continue-on-error: true
         env:
           ALERTS_WORKER_URL: ${{ secrets.ALERTS_WORKER_URL }}
           SUBSCRIPTIONS_API_KEY: ${{ secrets.SUBSCRIPTIONS_API_KEY }}
