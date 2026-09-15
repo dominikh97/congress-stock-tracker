@@ -91,3 +91,37 @@ Without those four repository secrets set, send_alerts.py just skips
 sending mail (the daily workflow still runs and updates trades.json
 normally) - and without ALERTS_WORKER_URL set in app.js, the Email Alerts
 tab tells visitors it isn't set up yet instead of silently failing.
+
+Supabase heartbeat
+------------------
+This project used to write trades into a Supabase project (see the old,
+now-removed database.py); that stopped once fetch_trades.py switched to
+committing data/trades.json directly. The Supabase project itself is still
+linked to this account though, and Supabase auto-pauses free-tier projects
+after 7 days with no API activity - upload_to_supabase.py exists purely to
+prevent that, by upserting one small heartbeat row every time the daily
+workflow runs (well under 7 days apart). It does not try to mirror trades
+data into Supabase.
+
+One-time setup: in the Supabase project's SQL editor, run:
+
+    create table if not exists sync_status (
+        id int primary key,
+        last_run_at timestamptz,
+        trades_count int,
+        new_trades_count int
+    );
+
+Then add these repository secrets:
+
+   - SUPABASE_URL  the project's API URL, e.g.
+                    https://oalpdiiwxwoqmvwvpyvh.supabase.co
+   - SUPABASE_KEY  the project's service_role key (Project Settings ->
+                    API) - service_role bypasses row-level security,
+                    which a backend cron job needs since it isn't an
+                    authenticated user
+
+Without those two secrets, upload_to_supabase.py just skips (same
+no-op-when-unconfigured pattern as the alerts step) - it will never fail
+the daily workflow either way, config missing or the request itself
+failing.

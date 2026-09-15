@@ -74,6 +74,23 @@ function updateStats() {
 
     document.getElementById("stock-count").textContent =
         stocks.size;
+
+    const txDates = allTrades.map(t => t.tx_date).filter(Boolean).sort();
+
+    document.getElementById("tracking-since").textContent =
+        txDates.length > 0 ? formatMonthYear(txDates[0]) : "—";
+}
+
+
+function formatMonthYear(isoDate) {
+
+    const date = new Date(`${isoDate}T00:00:00Z`);
+
+    return date.toLocaleDateString("en-US", {
+        month: "short",
+        year: "numeric",
+        timeZone: "UTC",
+    });
 }
 
 

@@ -44,6 +44,17 @@ jobs:
         run: |
           python send_alerts.py
 
+      - name: Update Supabase heartbeat
+        # Same reasoning as the alerts step above - this only exists to
+        # keep the linked Supabase project from being auto-paused for
+        # inactivity, and must never be able to block the commit below.
+        continue-on-error: true
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          python upload_to_supabase.py
+
       - name: Commit updated trades
         run: |
           git config user.name "github-actions[bot]"
