@@ -346,9 +346,7 @@ function applyFiltersAndRender() {
 }
 
 
-function renderPoliticianPicker() {
-
-    const container = document.getElementById("politician-picker");
+function visiblePoliticians() {
 
     const query =
         document
@@ -356,7 +354,15 @@ function renderPoliticianPicker() {
             .value
             .toLowerCase();
 
-    const visible = allMembers.filter(m => m.toLowerCase().includes(query));
+    return allMembers.filter(m => m.toLowerCase().includes(query));
+}
+
+
+function renderPoliticianPicker() {
+
+    const container = document.getElementById("politician-picker");
+
+    const visible = visiblePoliticians();
 
     if (visible.length === 0) {
         container.innerHTML = `<p class="loading">No politicians match that search.</p>`;
@@ -402,6 +408,52 @@ function renderPoliticianPicker() {
                 selectedMembers.size;
         });
     });
+}
+
+
+function selectAllVisible() {
+
+    const visible = visiblePoliticians();
+
+    let addedCount = 0;
+    let skippedCount = 0;
+
+    for (const member of visible) {
+
+        if (selectedMembers.has(member)) continue;
+
+        if (selectedMembers.size >= MAX_ALERT_MEMBERS) {
+            skippedCount++;
+            continue;
+        }
+
+        selectedMembers.add(member);
+        addedCount++;
+    }
+
+    document.getElementById("selected-count").textContent = selectedMembers.size;
+    renderPoliticianPicker();
+
+    if (skippedCount > 0) {
+        setAlertsStatus(
+            `Selected ${addedCount} - hit the ${MAX_ALERT_MEMBERS} politician limit, ${skippedCount} left unselected.`,
+            true
+        );
+    } else if (addedCount === 0) {
+        setAlertsStatus("Everything visible is already selected.", false);
+    } else {
+        setAlertsStatus("", false);
+    }
+}
+
+
+function clearAllSelected() {
+
+    selectedMembers.clear();
+
+    document.getElementById("selected-count").textContent = "0";
+    renderPoliticianPicker();
+    setAlertsStatus("", false);
 }
 
 
@@ -531,6 +583,14 @@ document
 document
     .getElementById("politician-search")
     .addEventListener("input", renderPoliticianPicker);
+
+document
+    .getElementById("select-all-politicians")
+    .addEventListener("click", selectAllVisible);
+
+document
+    .getElementById("clear-all-politicians")
+    .addEventListener("click", clearAllSelected);
 
 document.querySelectorAll(".mode-button").forEach(button => {
 
