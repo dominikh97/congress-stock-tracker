@@ -1,4 +1,5 @@
 const DATA_URL = "data/trades.json";
+const LAST_UPDATED_URL = "data/last_updated.json";
 const PAGE_SIZE = 50;
 const WHALE_COUNT = 5;
 const WHALE_WINDOW_DAYS = 30;
@@ -51,6 +52,52 @@ async function loadTrades() {
             </tr>
         `;
     }
+}
+
+
+async function loadLastUpdated() {
+
+    // Kept independent of loadTrades() - this file is written by the
+    // same daily job but is newer than trades.json itself (added in
+    // v1.02.2), so it won't exist yet on a fresh deploy until the next
+    // successful run commits it. That must never affect the trades
+    // table loading correctly.
+    try {
+
+        const response = await fetch(LAST_UPDATED_URL);
+
+        if (!response.ok) {
+            throw new Error("Failed to load last_updated.json");
+        }
+
+        const data = await response.json();
+
+        document.getElementById("data-last-updated").textContent =
+            `Data last updated: ${formatDateTime(data.last_updated)}`;
+
+    } catch (error) {
+
+        console.error(error);
+
+        document.getElementById("data-last-updated").textContent = "";
+    }
+}
+
+
+function formatDateTime(isoString) {
+
+    const date = new Date(isoString);
+
+    return date.toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+        timeZone: "UTC",
+        timeZoneName: "short",
+    });
 }
 
 
@@ -693,3 +740,4 @@ document
 
 
 loadTrades();
+loadLastUpdated();

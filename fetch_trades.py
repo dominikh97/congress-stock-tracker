@@ -1,5 +1,7 @@
 import json
 import os
+from datetime import datetime, timezone
+
 import requests
 
 # Free, keyless, no-rate-limit JSON feed. Committed daily to a public MIT
@@ -9,6 +11,7 @@ import requests
 API_URL = "https://raw.githubusercontent.com/kadoa-org/congress-trading-monitor/main/public/data/trades.json"
 DATA_FILE = "data/trades.json"
 NEW_TRADES_FILE = "data/new_trades.json"
+LAST_UPDATED_FILE = "data/last_updated.json"
 
 
 def normalize_trade_type(raw_type):
@@ -162,6 +165,29 @@ def save_newly_seen(trades):
     print(f"{len(trades)} newly seen trades written to {NEW_TRADES_FILE}")
 
 
+def save_last_updated(trades_count, new_trades_count):
+    """Record when the pipeline last successfully ran - committed to
+    the repo alongside trades.json so the frontend can show how fresh
+    the data is, independent of whether this run found anything new.
+    """
+
+    os.makedirs("data", exist_ok=True)
+
+    with open(LAST_UPDATED_FILE, "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "last_updated": datetime.now(timezone.utc).isoformat(),
+                "trades_count": trades_count,
+                "new_trades_count": new_trades_count,
+            },
+            f,
+            indent=2,
+            ensure_ascii=False
+        )
+
+    print(f"Wrote last-updated timestamp to {LAST_UPDATED_FILE}")
+
+
 def main():
 
     new_trades = fetch_trades()
@@ -181,6 +207,7 @@ def main():
 
     save_trades(all_trades)
     save_newly_seen(newly_seen)
+    save_last_updated(len(all_trades), len(newly_seen))
 
 
 if __name__ == "__main__":
