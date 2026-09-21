@@ -21,7 +21,10 @@ async function loadTrades() {
 
     try {
 
-        const response = await fetch(DATA_URL);
+        // Cache-bust: this file changes daily, and a plain fetch() can
+        // otherwise keep serving a stale cached copy from the browser
+        // or an intermediate CDN even after the underlying file updates.
+        const response = await fetch(`${DATA_URL}?v=${Date.now()}`, { cache: "no-store" });
 
         if (!response.ok) {
             throw new Error("Failed to load trades.json");
@@ -64,7 +67,7 @@ async function loadLastUpdated() {
     // table loading correctly.
     try {
 
-        const response = await fetch(LAST_UPDATED_URL);
+        const response = await fetch(`${LAST_UPDATED_URL}?v=${Date.now()}`, { cache: "no-store" });
 
         if (!response.ok) {
             throw new Error("Failed to load last_updated.json");
