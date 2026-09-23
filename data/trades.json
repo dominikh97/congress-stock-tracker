@@ -40603,5 +40603,50 @@
     "disclosed": "2026-09-17",
     "asset": "Alphabet Inc. - Class C Capital Stock",
     "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035450.pdf"
+  },
+  {
+    "id": "senate_028aef33-dc0d-44a1-992f-aa35ee42685b_t0",
+    "member": "A. Mitchell",
+    "chamber": "senate",
+    "ticker": "WFC",
+    "company": "Wells Fargo & Company Common Stock",
+    "trade_type": "Buy",
+    "amount": "$15,001 - $50,000",
+    "amount_low": 15001,
+    "amount_high": 50000,
+    "tx_date": "2026-09-01",
+    "disclosed": "2026-09-21",
+    "asset": "Wells Fargo & Company Common Stock",
+    "link": "https://efdsearch.senate.gov/search/view/ptr/028aef33-dc0d-44a1-992f-aa35ee42685b/"
+  },
+  {
+    "id": "house_20035480_g1",
+    "member": "Pete Sessions",
+    "chamber": "house",
+    "ticker": "GOOGL",
+    "company": "Alphabet Inc.",
+    "trade_type": "Sell",
+    "amount": "$15,001 - $50,000",
+    "amount_low": 15001,
+    "amount_high": 50000,
+    "tx_date": "2026-09-14",
+    "disclosed": "2026-09-18",
+    "asset": "Alphabet Inc. - Class A Common Stock",
+    "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035480.pdf"
+  },
+  {
+    "id": "house_20035480_g0",
+    "member": "Pete Sessions",
+    "chamber": "house",
+    "ticker": "ABBV",
+    "company": "AbbVie Inc. Common Stock",
+    "trade_type": "Sell",
+    "amount": "$15,001 - $50,000",
+    "amount_low": 15001,
+    "amount_high": 50000,
+    "tx_date": "2026-09-14",
+    "disclosed": "2026-09-18",
+    "asset": "AbbVie Inc. Common Stock",
+    "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035480.pdf"
   }
 ]
