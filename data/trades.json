@@ -54103,5 +54103,35 @@
     "disclosed": "2026-10-14",
     "asset": "NEW YORK ST MTG AGY HOMEOWNER MTG REV",
     "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/9116378.pdf"
+  },
+  {
+    "id": "house_20035490_g1",
+    "member": "Laurel Lee",
+    "chamber": "house",
+    "ticker": "NOKBF",
+    "company": "NOKIA A SHS",
+    "trade_type": "Buy",
+    "amount": "$15,001 - $50,000",
+    "amount_low": 15001,
+    "amount_high": 50000,
+    "tx_date": "2026-09-18",
+    "disclosed": "2026-10-16",
+    "asset": "NOKIA A SHS",
+    "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035490.pdf"
+  },
+  {
+    "id": "house_20035490_g0",
+    "member": "Laurel Lee",
+    "chamber": "house",
+    "ticker": "BAC",
+    "company": "Bank of America Corporation Common Stock",
+    "trade_type": "Sell",
+    "amount": "$50,001 - $100,000",
+    "amount_low": 50001,
+    "amount_high": 100000,
+    "tx_date": "2026-08-24",
+    "disclosed": "2026-10-16",
+    "asset": "Bank of America Corporation Common Stock",
+    "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035490.pdf"
   }
 ]
