@@ -56353,5 +56353,20 @@
     "disclosed": "2026-10-26",
     "asset": "A-IC, a series of A-ST Opportunity Funds LLC\n                                        \n                                        \n                                        \n                                            \n                                                \n                                                    Company: Intercom, Inc\n                                                    \n                                                         (New York, NY)\n                                                    \n                                                \n                                            \n\n                                            \n                                                Description: Messaging Software",
     "link": "https://efdsearch.senate.gov/search/view/ptr/e67780bf-56e4-46f0-a81e-574a701dd539/"
+  },
+  {
+    "id": "house_20035751_g0",
+    "member": "Ann Wagner",
+    "chamber": "house",
+    "ticker": null,
+    "company": "American Expr Natl Bank CD",
+    "trade_type": "Sell",
+    "amount": "$100,001 - $250,000",
+    "amount_low": 100001,
+    "amount_high": 250000,
+    "tx_date": "2026-10-20",
+    "disclosed": "2026-11-02",
+    "asset": "American Expr Natl Bank CD",
+    "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035751.pdf"
   }
 ]
