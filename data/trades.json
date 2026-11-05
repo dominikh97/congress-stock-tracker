@@ -56368,5 +56368,20 @@
     "disclosed": "2026-11-02",
     "asset": "American Expr Natl Bank CD",
     "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035751.pdf"
+  },
+  {
+    "id": "house_20035763_g0",
+    "member": "Robert E. Latta",
+    "chamber": "house",
+    "ticker": "FMAO",
+    "company": "Farmers & Merchants Bancorp, Inc.",
+    "trade_type": "Buy",
+    "amount": "$1,001 - $15,000",
+    "amount_low": 1001,
+    "amount_high": 15000,
+    "tx_date": "2026-10-20",
+    "disclosed": "2026-11-03",
+    "asset": "Farmers & Merchants Bancorp, Inc.",
+    "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035763.pdf"
   }
 ]
