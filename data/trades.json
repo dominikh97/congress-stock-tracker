@@ -60958,5 +60958,50 @@
     "disclosed": "2026-11-05",
     "asset": "SYSCO HOLDINGS CORP/ SYSCO COR HYBRID 10/06/2056",
     "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/9116399.pdf"
+  },
+  {
+    "id": "house_20035014_g1",
+    "member": "Thomas Suozzi",
+    "chamber": "house",
+    "ticker": "US-TBILL",
+    "company": "US Treasury Bill",
+    "trade_type": "Buy",
+    "amount": "$15,001 - $50,000",
+    "amount_low": 15001,
+    "amount_high": 50000,
+    "tx_date": "2026-10-15",
+    "disclosed": "2026-11-09",
+    "asset": "US Treasury Bill",
+    "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035014.pdf"
+  },
+  {
+    "id": "house_20035014_g0",
+    "member": "Thomas Suozzi",
+    "chamber": "house",
+    "ticker": "US-TBILL",
+    "company": "US Treasury Bill",
+    "trade_type": "Buy",
+    "amount": "$15,001 - $50,000",
+    "amount_low": 15001,
+    "amount_high": 50000,
+    "tx_date": "2026-10-13",
+    "disclosed": "2026-11-09",
+    "asset": "US Treasury Bill",
+    "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035014.pdf"
+  },
+  {
+    "id": "house_20024921_g0",
+    "member": "David Kustoff",
+    "chamber": "house",
+    "ticker": "WBD",
+    "company": "Warner Bros. Discovery, Inc.",
+    "trade_type": "Sell",
+    "amount": "$1,001 - $15,000",
+    "amount_low": 1001,
+    "amount_high": 15000,
+    "tx_date": "2026-10-07",
+    "disclosed": "2026-11-09",
+    "asset": "Warner Bros. Discovery, Inc. - Series A Common Stock",
+    "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20024921.pdf"
   }
 ]
