@@ -63388,5 +63388,35 @@
     "disclosed": "2026-11-20",
     "asset": "WBD",
     "link": "https://efdsearch.senate.gov/search/view/ptr/8f97b859-75e2-4739-8392-d375744aea97/"
+  },
+  {
+    "id": "house_20036891_g0",
+    "member": "Ed Case",
+    "chamber": "house",
+    "ticker": "AAPL",
+    "company": "Apple Inc.",
+    "trade_type": "Buy",
+    "amount": "$1,001 - $15,000",
+    "amount_low": 1001,
+    "amount_high": 15000,
+    "tx_date": "2026-11-16",
+    "disclosed": "2026-11-21",
+    "asset": "Apple Inc. - Common Stock",
+    "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20036891.pdf"
+  },
+  {
+    "id": "house_20036883_g0",
+    "member": "Jennifer McClellan",
+    "chamber": "house",
+    "ticker": "VZ",
+    "company": "Verizon Communications Inc. Common Stock",
+    "trade_type": "Sell",
+    "amount": "$50,001 - $100,000",
+    "amount_low": 50001,
+    "amount_high": 100000,
+    "tx_date": "2026-11-19",
+    "disclosed": "2026-11-20",
+    "asset": "Verizon Communications Inc. Common Stock",
+    "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20036883.pdf"
   }
 ]
