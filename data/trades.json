@@ -66343,5 +66343,50 @@
     "disclosed": "2026-11-23",
     "asset": "Costco Wholesale Corporation - Common Stock",
     "link": "https://disclosures-clerk.house.gov/public_disc/ptr-pdfs/2026/20035776.pdf"
+  },
+  {
+    "id": "senate_99dc7269-2f99-4c8b-8d0c-a3a91328af84_t2",
+    "member": "Rand Paul",
+    "chamber": "senate",
+    "ticker": "NVDA",
+    "company": "NVIDIA Corporation",
+    "trade_type": "Buy",
+    "amount": "$1,001 - $15,000",
+    "amount_low": 1001,
+    "amount_high": 15000,
+    "tx_date": "2026-11-09",
+    "disclosed": "2026-11-25",
+    "asset": "NVIDIA Corporation - Common Stock",
+    "link": "https://efdsearch.senate.gov/search/view/ptr/99dc7269-2f99-4c8b-8d0c-a3a91328af84/"
+  },
+  {
+    "id": "senate_99dc7269-2f99-4c8b-8d0c-a3a91328af84_t1",
+    "member": "Rand Paul",
+    "chamber": "senate",
+    "ticker": "NVDA",
+    "company": "NVIDIA Corporation",
+    "trade_type": "Buy",
+    "amount": "$1,001 - $15,000",
+    "amount_low": 1001,
+    "amount_high": 15000,
+    "tx_date": "2026-11-07",
+    "disclosed": "2026-11-25",
+    "asset": "NVIDIA Corporation - Common Stock",
+    "link": "https://efdsearch.senate.gov/search/view/ptr/99dc7269-2f99-4c8b-8d0c-a3a91328af84/"
+  },
+  {
+    "id": "senate_99dc7269-2f99-4c8b-8d0c-a3a91328af84_t0",
+    "member": "Rand Paul",
+    "chamber": "senate",
+    "ticker": "NVDA",
+    "company": "NVIDIA Corporation",
+    "trade_type": "Buy",
+    "amount": "$1,001 - $15,000",
+    "amount_low": 1001,
+    "amount_high": 15000,
+    "tx_date": "2026-11-05",
+    "disclosed": "2026-11-25",
+    "asset": "NVIDIA Corporation - Common Stock",
+    "link": "https://efdsearch.senate.gov/search/view/ptr/99dc7269-2f99-4c8b-8d0c-a3a91328af84/"
   }
 ]
